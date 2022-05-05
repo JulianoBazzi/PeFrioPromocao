@@ -16,6 +16,8 @@ export default class MyDocument extends Document {
           <link rel="shortcut icon" href="favicon.ico" />
           <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
           <meta name="author" content="Bazzi Solutions" />
+          <meta name="description" content="3ª Promoção Pé Frio da Paroquia São Domingos Sávio" />
+          <link rel="icon" href="/favicon.ico" />
           {/* Inject MUI styles first to match with the prepend: true configuration. */}
           {(this.props as any).emotionStyleTags}
         </Head>

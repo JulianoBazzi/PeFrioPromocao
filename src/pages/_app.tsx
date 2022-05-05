@@ -26,7 +26,13 @@ export default function MyApp(props: MyAppProps) {
         <meta name='viewport' content='initial-scale=1, width=device-width' />
       </Head>
       <ThemeProvider theme={theme}>
-        <SnackbarProvider maxSnack={3}>
+        <SnackbarProvider
+          maxSnack={3}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+          }}
+        >
           <CssBaseline />
           {/* <Layout> */}
           <Component {...pageProps} />

@@ -7,9 +7,12 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-// import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import teste from '../public/logo.png';
+import { supabase } from '~/services/supabase';
+import CircularProgress from '@mui/material/CircularProgress';
+import { NextPage } from 'next';
+import { useSnackbar } from 'notistack';
+import Head from 'next/head';
 
 function Copyright(props: any) {
   return (
@@ -25,18 +28,47 @@ function Copyright(props: any) {
   );
 }
 
-export default function Login() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+const Login: NextPage = () => {
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [loading, setLoading] = React.useState(false);
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
+  React.useEffect(() => {
+    if (supabase.auth.session()) {
+      window.location.href = '/';
+    }
+  }, []);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
+    try {
+      setLoading(true);
+      const { user, session, error } = await supabase.auth.signIn({
+        email,
+        password,
+      });
+
+      if (error) {
+        enqueueSnackbar(error.message, {
+          variant: 'warning',
+        })
+      }
+
+      if (session) {
+        window.location.href = '/';
+      }
+    }
+    finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <Grid container component="main" sx={{ height: '100vh' }}>
+      <Head>
+        <title>Login - Promoção Pé Frio</title>
+      </Head>
       <CssBaseline />
       <Grid
         item
@@ -66,7 +98,7 @@ export default function Login() {
             {/* <LockOutlinedIcon /> */}
           </Avatar>
           <Typography component="h1" variant="h5">
-            Promoção Pré Frio
+            3ª Promoção - Pé Frio
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
@@ -76,7 +108,11 @@ export default function Login() {
               id="email"
               label="Email"
               name="email"
-              autoComplete="email"
+              type="email"
+              autoComplete="off"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
               autoFocus
             />
             <TextField
@@ -87,16 +123,21 @@ export default function Login() {
               label="Senha"
               type="password"
               id="password"
-              autoComplete="current-password"
+              autoComplete="off"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
             >
               Entrar
             </Button>
+            { loading && <CircularProgress color="success" />}
             <Copyright sx={{ mt: 5 }} />
           </Box>
         </Box>
@@ -104,3 +145,5 @@ export default function Login() {
     </Grid>
   );
 }
+
+export default Login;
