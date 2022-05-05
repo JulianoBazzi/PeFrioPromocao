@@ -14,13 +14,13 @@ import teste from '../public/logo.png';
 function Copyright(props: any) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      Bazzi Solutions{' '}
-      {/* <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '} */}
+      ©{' '}
       {new Date().getFullYear()}
-      {'.'}
+      {' '}- Desenvolvido por{' '}
+      <Link color="inherit" href="mailto:contato@bazzi.solutions" underline="none">
+        Bazzi Solutions
+      </Link>
+      .
     </Typography>
   );
 }
@@ -44,7 +44,7 @@ export default function Login() {
         sm={4}
         md={7}
         sx={{
-          backgroundImage: `url(${teste})`,
+          backgroundImage: `url('/logo.png')`,
           backgroundRepeat: 'no-repeat',
           backgroundColor: (t) =>
             t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
