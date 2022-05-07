@@ -13,7 +13,7 @@ function Footer() {
           bgcolor: 'primary.main',
           color: '#fff',
           display: isDisplayed ? 'none' : 'flex',
-          p: 2
+          p: 1
         }}
       >
         <Container>
