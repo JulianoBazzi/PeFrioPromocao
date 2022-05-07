@@ -13,6 +13,7 @@ import {
   DataGrid,
   GridColumns,
   GridActionsCellItem,
+  GridRowParams,
   ptBR,
 } from '@mui/x-data-grid';
 import Typography from '@mui/material/Typography';
@@ -123,7 +124,7 @@ export default function Number() {
     }
   }
 
-  async function deleteData(id: number) {
+  async function deleteData(id: any) {
     const { data, error, status } = await supabase
       .from('drawn_numbers')
       .delete()
@@ -147,8 +148,8 @@ export default function Number() {
       field: 'actions',
       type: 'actions',
       width: 100,
-      getActions: (params) => [
-        <GridActionsCellItem icon={<DeleteIcon />} onClick={async () => await deleteData(params.id)} label="Excluir" />,
+      getActions: (params: GridRowParams<INumbers>) => [
+        <GridActionsCellItem icon={<DeleteIcon />} onClick={() => deleteData(params.id)} label="Excluir" />,
       ],
     },
   ]
