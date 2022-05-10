@@ -1,178 +1,268 @@
-import { Box, Button, CircularProgress, Grid, ImageList, ImageListItem } from '@mui/material';
-import type { NextPage } from 'next';
-import _ from 'lodash';
-import Head from 'next/head'
-import { useEffect, useState } from 'react';
-import { supabase } from '~/services/supabase';
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import NumberFormat from 'react-number-format';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import {
+  DataGrid,
+  GridColumns,
+  GridActionsCellItem,
+  GridRowParams,
+  ptBR,
+} from '@mui/x-data-grid';
+import Typography from '@mui/material/Typography';
+import { CircularProgress, Container, Hidden, IconButton, Stack, Tooltip } from '@mui/material';
 import { useSnackbar } from 'notistack';
+import { supabase } from '~/services/supabase';
 import INumbers from '~/models/INumbers';
 import Layout from '~/layout/Layout';
 
-const Home: NextPage = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [numbersGeral, setNumbersGeral] = useState<INumbers[]>([]);
-  const [numbersSorted, setNumbersSorted] = useState<INumbers[]>([]);
-  const [numbers, setNumbers] = useState<INumbers[]>([]);
-  const [page, setPage] = useState(-1);
-  const defaultNumbers = Array.from(Array(6000).keys());
+interface CustomProps {
+  onChange: (event: { target: { name: string; value: string } }) => void;
+  name: string;
+}
+
+export default function Home() {
+  const [numberInfo, setNumberInfo] = React.useState(0);
   const { enqueueSnackbar } = useSnackbar();
-  const minute_ms = 30000;
-  const pageCount = 265;
+  const [loading, setLoading] = React.useState(false);
+  const [isFetch, setIsFetch] = React.useState(false);
+  const [dataX, setDataX] = React.useState<INumbers[]>([]);
 
-  const getNumbers = (numbersX: INumbers[]) => {
-    console.log('getNumbers');
-    const y: INumbers[] = [];
-    defaultNumbers.forEach((x: number) => y.push({ number: x + 1, sorted: false }));
+  React.useEffect(() => {
+    if (!supabase.auth.session()) {
+      window.location.href = '/login';
+    }
 
-    numbersSorted.forEach(x => x.sorted = true);
-    const sorted = numbersSorted.map(x => ({ ...x, sorted: true }));
-    const merged = _.merge(_.keyBy(y, 'number'), _.keyBy(sorted, 'number'));
-    const result = _.values(merged);
+    getData();
+  }, []);
 
-    setNumbersGeral(result);
+  const NumberFormatCustom = React.forwardRef(function NumberFormatCustom(
+    props: CustomProps,
+    ref
+  ) {
+    const { onChange, ...other } = props;
+
+    return (
+      <NumberFormat
+        {...other}
+        getInputRef={ref}
+        onValueChange={(values) => {
+          onChange({
+            target: {
+              name: props.name,
+              value: values.value,
+            },
+          });
+        }}
+        thousandSeparator={false}
+        isNumericString
+        decimalScale={0}
+        prefix=""
+      />
+    );
+  });
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (numberInfo === undefined || isNaN(numberInfo) || (numberInfo < 1 || numberInfo > 6000)) {
+      enqueueSnackbar('Por favor informe um número válido', {
+        variant: 'warning',
+      });
+
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('drawn_numbers')
+        .insert({ number: numberInfo })
+
+      if (error) {
+        enqueueSnackbar(error.message, {
+          variant: 'warning',
+        });
+      }
+
+      if (data) {
+        setNumberInfo(0);
+      }
+    }
+    finally {
+      setLoading(false);
+    }
   }
 
   async function getData() {
-    console.log('getData');
-    const { error, data } = await supabase
+    setIsFetch(true);
+    try {
+      const { error, data } = await supabase
+        .from('drawn_numbers')
+        .select('id, number')
+        .order('number', { ascending: true });
+
+      if (error) {
+        enqueueSnackbar(error.message, {
+          variant: 'warning',
+        })
+      }
+
+      if (data) {
+        setDataX(data);
+      }
+    } finally {
+      setIsFetch(false);
+    }
+  }
+
+  async function deleteData(id: any) {
+    const { data, error, status } = await supabase
       .from('drawn_numbers')
-      .select('id, number')
-      .order('created_at', { ascending: false });
+      .delete()
+      .match({ id: id })
 
     if (error) {
       enqueueSnackbar(error.message, {
         variant: 'warning',
       })
-    }
-
-    if (data) {
-      setNumbersSorted(data);
+    } else {
+      const updateTable = [...dataX];
+      const index = updateTable.findIndex(x => x.id === id);
+      updateTable.splice(index, 1);
+      setDataX(updateTable);
     }
   }
 
-  useEffect(() => {
-    if (!supabase.auth.session()) {
-      window.location.href = '/login';
-    }
-
-    if (numbers.length === 0) {
-      getData();
-    }
-
-    const mySubscription = supabase
-      .from('drawn_numbers')
-      .on('INSERT', payload => {
-        console.log('numbers');
-        console.log(numbers);
-        const updateTable = [...numbers];
-
-        console.log('updateTable');
-        console.log(updateTable);
-
-        console.log('id');
-        console.log(payload.new.id);
-
-        const index = updateTable.findIndex(x => x.number === payload.new.number);
-
-        console.log('index');
-        console.log(index);
-
-        if (index > -1) {
-          payload.new.sorted = true;
-          updateTable[index] = payload.new;
-
-          console.log('updateTable 2');
-          console.log(updateTable);
-
-          setNumbers(updateTable);
-
-          console.log('Change received!', payload)
-        }
-      })
-      .subscribe()
-
-    const interval = setInterval(() => {
-      setPage((page) => page > 21 ? 0 : page + 1);
-    }, minute_ms);
-
-    return () => {
-      clearInterval(interval);
-      supabase.removeAllSubscriptions();
-    };
-  }, []);
-
-  useEffect(() => {
-    getNumbers(numbersSorted);
-  }, [numbersSorted]);
-
-  useEffect(() => {
-    if (page > -1) {
-      const index = (page * pageCount);
-      const indexInit = page === 0 ? index : index + page;
-      const obj = numbersGeral.filter(x => x.number >= indexInit && x.number <= indexInit + pageCount);
-      setNumbers(obj);
-
-      if (isLoading) {
-        setIsLoading(false);
-      }
-    }
-  }, [page]);
+  const columns: GridColumns = [
+    { field: 'number', headerName: 'Número', flex: 1, editable: false, filterable: true },
+    {
+      field: 'actions',
+      type: 'actions',
+      width: 100,
+      getActions: (params: GridRowParams<INumbers>) => [
+        <GridActionsCellItem icon={<DeleteIcon />} onClick={() => deleteData(params.id)} label="Excluir" />,
+      ],
+    },
+  ]
 
   return (
-    <Layout>
-      <Head>
-        <title>Promoção Pé Frio</title>
-      </Head>
-      <main>
-        {isLoading ? (
-          <div style={{ margin: 0, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-            <CircularProgress color="primary" />
-          </div>
-        ) : (
-          <>
-            <ImageList component="main" sx={{ mt: 0.5, p: 0.2 }} cols={19} rowHeight={40}>
-              {numbers.map((item) => (
-                <ImageListItem key={item.number}>
-                  <Box component="span" sx={{ border: '0.3px solid black' }}>
-                    <Button fullWidth sx={{ backgroundColor: item.sorted ? '#AAF27F' : '#FFFFFF' }}>{item.number}</Button>
-                  </Box>
-                </ImageListItem>
-              ))}
-            </ImageList>
+    <Layout hideFooter>
+      <Grid container component="main" sx={{ height: '70vh' }}>
+        <CssBaseline />
+        <Grid item xs={12} sm={8} md={7}>
+          <Box
+            sx={{
+              my: 8,
+              mx: 4,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <Typography component="h1" variant="h5">
+              Informar Número
+            </Typography>
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="number"
+                label="Número"
+                name="number"
+                autoComplete="off"
+                value={numberInfo}
+                onChange={(e) => setNumberInfo(parseInt(e.target.value))}
+                InputProps={{
+                  inputComponent: NumberFormatCustom as any,
+                }}
+                disabled={loading}
+                autoFocus
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2, textTransform: 'none' }}
+                disabled={loading}
+              >
+                Cadastrar
+              </Button>
+              {loading && <Stack alignItems="center"><CircularProgress color="success" /></Stack>}
+            </Box>
+          </Box>
 
-            {page === 22 && (
-              <Grid container>
-                <Grid item md={6}>
-                  <Box
-                    sx={{
-                      mt: 6,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <img src="logo.png" alt="Mercurius" width="300" />
-                  </Box>
-                </Grid>
-                <Grid item md={6}>
-                  <Box
-                    sx={{
-                      mt: 6,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <img src="app-logo.webp" alt="Mercurius" width="300" />
-                  </Box>
-                </Grid>
+          <Hidden mdDown smDown>
+            <Grid container sx={{ mt: 5 }}>
+              <Grid item md={6}>
+                <Box
+                  sx={{
+                    mt: 6,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                  }}
+                >
+                  <img src="logo.png" alt="Mercurius" width="300" />
+                </Box>
               </Grid>
-            )}
-          </>
-        )}
-      </main>
-    </Layout>
-  )
-}
+              <Grid item md={6}>
+                <Box
+                  sx={{
+                    mt: 6,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                  }}
+                >
+                  <img src="app-logo.webp" alt="Mercurius" width="300" />
+                </Box>
+              </Grid>
+            </Grid>
+          </Hidden>
+        </Grid>
+        <Grid
+          item
+          xs={false}
+          sm={4}
+          md={5}
+        >
+          <Stack sx={{ p: 2 }}>
+            <Stack direction="row" spacing={2}>
+              <Typography component="h1" variant="h5">
+                Números Cadastrados
+              </Typography>
 
-export default Home
+              <Tooltip title="Atualizar" placement="top-end">
+                <IconButton
+                  size="small"
+                  aria-label="refresh data"
+                  onClick={async () => await getData()}
+                >
+                  <AutorenewIcon />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+
+            <div style={{ height: 500, width: '100%' }}>
+              <DataGrid
+                localeText={ptBR.components.MuiDataGrid.defaultProps.localeText}
+                autoPageSize
+                disableSelectionOnClick
+                loading={isFetch}
+                rows={dataX}
+                columns={columns}
+              />
+            </div>
+          </Stack>
+        </Grid>
+      </Grid>
+    </Layout >
+  );
+}
