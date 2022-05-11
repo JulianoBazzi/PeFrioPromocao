@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Grid, ImageList, ImageListItem, Typography } from '@mui/material';
+import { Box, CircularProgress, ImageList, ImageListItem, Stack, Typography } from '@mui/material';
 import type { NextPage } from 'next';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
@@ -53,53 +53,49 @@ const LastNumbers: NextPage = () => {
   }, []);
 
   return (
-    <Layout hideHeader hideFooter>
+    <Layout hideHeader>
       {isLoading ? (
         <div style={{ margin: 0, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
           <CircularProgress color="primary" />
         </div>
       ) : (
         <>
-          <Grid container sx={{ mt: 1 }}>
-            <Grid item md={2}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                }}
-              >
-                <img src="logo.png" alt="Mercurius" width="150" />
-              </Box>
-            </Grid>
-            <Grid item md={8}>
-              <Typography component="h1" variant="h4" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                Últimos 20 números sorteados
-              </Typography>
-            </Grid>
-            <Grid item md={2}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                }}
-              >
-                <img src="app-logo.webp" alt="Mercurius" width="150" />
-              </Box>
-            </Grid>
-          </Grid>
-          <ImageList component="main" sx={{ p: 3, ml: 10 }} cols={5} rowHeight={130}>
-            {numbers.map((item) => (
-              <ImageListItem key={item.number}>
-                <Box component="span" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 130, p: 4, border: '0.3px solid black', borderRadius: 400, ml: 5 }}>
-                  <Typography variant="h3" color="text.primary" sx={{ backgroundColor: 'transparent' }}>
-                    {item.number.toString().padStart(3, '0')}
-                  </Typography>
-                </Box>
-              </ImageListItem>
-            ))}
-          </ImageList>
+          <Stack direction="row" justifyContent="space-between" sx={{ p: 1 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
+              <img src="logo.png" alt="Mercurius" width="150" />
+            </Box>
+            <Typography component="h1" variant="h5" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              Últimos 20 números sorteados
+            </Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
+              <img src="app-logo.webp" alt="Mercurius" width="150" />
+            </Box>
+          </Stack>
+          <Stack direction="row" justifyContent="center">
+            <ImageList component="main" sx={{ p: 2, ml: 3 }} cols={5}>
+              {numbers.map((item) => (
+                <ImageListItem key={item.number}>
+                  <Box component="span" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 90, p: 3, border: '0.3px solid black', borderRadius: 100, mr: 3 }}>
+                    <Typography variant="h5" color="text.primary" sx={{ backgroundColor: 'transparent' }}>
+                      {item.number.toString().padStart(3, '0')}
+                    </Typography>
+                  </Box>
+                </ImageListItem>
+              ))}
+            </ImageList>
+          </Stack>
         </>
       )}
     </Layout>

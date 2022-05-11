@@ -15,7 +15,7 @@ import {
   ptBR,
 } from '@mui/x-data-grid';
 import Typography from '@mui/material/Typography';
-import { CircularProgress, Container, Hidden, IconButton, Stack, Tooltip } from '@mui/material';
+import { CircularProgress, Hidden, IconButton, Stack, Tooltip } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { supabase } from '~/services/supabase';
 import INumbers from '~/models/INumbers';
@@ -80,6 +80,7 @@ export default function Home() {
 
     try {
       setLoading(true);
+
       const { data, error } = await supabase
         .from('drawn_numbers')
         .insert({ number: numberInfo })
@@ -105,7 +106,7 @@ export default function Home() {
       const { error, data } = await supabase
         .from('drawn_numbers')
         .select('id, number')
-        .order('number', { ascending: true });
+        .order('number', { ascending: false });
 
       if (error) {
         enqueueSnackbar(error.message, {

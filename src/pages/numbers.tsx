@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Grid, ImageList, ImageListItem } from '@mui/material';
+import { Box, CircularProgress, ImageList, ImageListItem, Stack, Typography } from '@mui/material';
 import type { NextPage } from 'next';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
@@ -8,7 +8,7 @@ import INumbers from '~/models/INumbers';
 import Layout from '~/layout/Layout';
 
 const Numbers: NextPage = () => {
-  const pageCount = 265;
+  const pageCount = 339;
   const [isLoading, setIsLoading] = useState(true);
   const [numbersGeral, setNumbersGeral] = useState<INumbers[]>([]);
   const [numbersSorted, setNumbersSorted] = useState<INumbers[]>([]);
@@ -66,11 +66,9 @@ const Numbers: NextPage = () => {
           const index = updateTable.findIndex(x => x.number === num.number);
 
           if (index > -1) {
-            console.log('updateTable');
             updateTable[index] = num;
           }
 
-          console.log('updateTableGeral');
           setNumbersGeral((numbersY) => {
             if (index > -1) {
               const merged = _.merge(_.keyBy(numbersY, 'number'), _.keyBy(updateTable, 'number'));
@@ -82,7 +80,6 @@ const Numbers: NextPage = () => {
             const indexY = updateTableY.findIndex(x => x.number === num.number);
 
             if (indexY > -1) {
-              console.log('updateTableY');
               updateTableY[indexY] = num;
             }
 
@@ -98,11 +95,9 @@ const Numbers: NextPage = () => {
           const index = updateTable.findIndex(x => x.id === payload.old.id);
 
           if (index > -1) {
-            console.log('updateTable');
             updateTable[index].sorted = false;
           }
 
-          console.log('updateTableGeral');
           setNumbersGeral((numbersY) => {
             if (index > -1) {
               const merged = _.merge(_.keyBy(numbersY, 'number'), _.keyBy(updateTable, 'number'));
@@ -114,7 +109,6 @@ const Numbers: NextPage = () => {
             const indexY = updateTableY.findIndex(x => x.id === payload.old.id);
 
             if (indexY > -1) {
-              console.log('updateTableY');
               updateTableY[indexY].sorted = false;
             }
 
@@ -126,7 +120,7 @@ const Numbers: NextPage = () => {
       }).subscribe();
 
     const interval = setInterval(() => {
-      setPage((page) => page > 21 ? 0 : page + 1);
+      setPage((page) => page > 16 ? 0 : page + 1);
     }, minute_ms);
 
     return () => {
@@ -160,43 +154,40 @@ const Numbers: NextPage = () => {
         </div>
       ) : (
         <>
-          <ImageList component="main" sx={{ mt: 0.5, p: 0.2 }} cols={19} rowHeight={40}>
+          <ImageList component="main" sx={{ mt: 0.8, p: 0.2 }} cols={20}>
             {numbers.map((item) => (
               <ImageListItem key={item.number}>
-                <Box component="span" sx={{ border: '0.3px solid black' }}>
-                  <Button fullWidth sx={{ backgroundColor: item.sorted ? '#AAF27F' : '#FFFFFF' }}>{item.number}</Button>
+                <Box component="span" sx={{ border: '0.3px solid black', backgroundColor: item.sorted ? '#AAF27F' : '#FFFFFF', textAlign: 'center' }}>
+                  <Typography variant="caption" color="text.primary">
+                    {item.number}
+                  </Typography>
+                  {/* <Button fullWidth sx={{ backgroundColor: item.sorted ? '#AAF27F' : '#FFFFFF' }}>{item.number}</Button> */}
                 </Box>
               </ImageListItem>
             ))}
           </ImageList>
 
-          {page === 22 && (
-            <Grid container>
-              <Grid item md={6}>
-                <Box
-                  sx={{
-                    mt: 6,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                  }}
-                >
-                  <img src="logo.png" alt="Mercurius" width="300" />
-                </Box>
-              </Grid>
-              <Grid item md={6}>
-                <Box
-                  sx={{
-                    mt: 6,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                  }}
-                >
-                  <img src="app-logo.webp" alt="Mercurius" width="300" />
-                </Box>
-              </Grid>
-            </Grid>
+          {page === 17 && (
+            <Stack direction="row" justifyContent="space-between" sx={{ p: 5 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}
+              >
+                <img src="logo.png" alt="Mercurius" width="200" />
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}
+              >
+                <img src="app-logo.webp" alt="Mercurius" width="200" />
+              </Box>
+            </Stack>
           )}
         </>
       )}
