@@ -63,7 +63,7 @@ export default function Winners() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (winner1 === undefined || isNaN(winner1) || (winner1 < 1 || winner1 > 6000)) {
+    if (winner1 === undefined || isNaN(winner1) || (winner1 < 0 || winner1 > 6000)) {
       enqueueSnackbar('Por favor informe um número válido', {
         variant: 'warning',
       });
@@ -71,7 +71,7 @@ export default function Winners() {
       return;
     }
 
-    if (winner2 === undefined || isNaN(winner2) || (winner2 < 1 || winner2 > 6000)) {
+    if (winner2 === undefined || isNaN(winner2) || (winner2 < 0 || winner2 > 6000)) {
       enqueueSnackbar('Por favor informe um número válido', {
         variant: 'warning',
       });
@@ -79,7 +79,7 @@ export default function Winners() {
       return;
     }
 
-    if (winner3 === undefined || isNaN(winner3) || (winner3 < 1 || winner3 > 6000)) {
+    if (winner3 === undefined || isNaN(winner3) || (winner3 < 0 || winner3 > 6000)) {
       enqueueSnackbar('Por favor informe um número válido', {
         variant: 'warning',
       });
@@ -87,7 +87,7 @@ export default function Winners() {
       return;
     }
 
-    if (winner4 === undefined || isNaN(winner4) || (winner4 < 1 || winner4 > 6000)) {
+    if (winner4 === undefined || isNaN(winner4) || (winner4 < 0 || winner4 > 6000)) {
       enqueueSnackbar('Por favor informe um número válido', {
         variant: 'warning',
       });

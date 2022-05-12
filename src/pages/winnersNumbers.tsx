@@ -86,7 +86,7 @@ const WinnersNumbers: NextPage = () => {
             </Box>
           </Stack>
           <ImageList component="main" sx={{ p: 2 }} cols={4}>
-            <ImageListItem key={winners?.winner1}>
+            <ImageListItem key={1}>
               <Stack direction="column">
                 <Box
                   sx={{
@@ -106,7 +106,7 @@ const WinnersNumbers: NextPage = () => {
                 </Box>
               </Stack>
             </ImageListItem>
-            <ImageListItem key={winners?.winner2}>
+            <ImageListItem key={2}>
               <Stack direction="column">
                 <Box
                   sx={{
@@ -126,7 +126,7 @@ const WinnersNumbers: NextPage = () => {
                 </Box>
               </Stack>
             </ImageListItem>
-            <ImageListItem key={winners?.winner3}>
+            <ImageListItem key={3}>
               <Stack direction="column">
                 <Box
                   sx={{
@@ -146,7 +146,7 @@ const WinnersNumbers: NextPage = () => {
                 </Box>
               </Stack>
             </ImageListItem>
-            <ImageListItem key={winners?.winner4}>
+            <ImageListItem key={4}>
               <Stack direction="column">
                 <Box
                   sx={{
