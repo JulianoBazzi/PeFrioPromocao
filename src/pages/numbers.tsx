@@ -16,7 +16,7 @@ const Numbers: NextPage = () => {
   const [page, setPage] = useState(-1);
   const defaultNumbers = Array.from(Array(6000).keys());
   const { enqueueSnackbar } = useSnackbar();
-  const minute_ms = 5000;
+  const minute_ms = 30000;
 
   const getNumbers = (numbersX: INumbers[]) => {
     const y: INumbers[] = [];
