@@ -86,9 +86,15 @@ export default function Home() {
         .insert({ number: numberInfo })
 
       if (error) {
-        enqueueSnackbar(error.message, {
-          variant: 'warning',
-        });
+        if (error.code === '23505') {
+          enqueueSnackbar('Número já informado', {
+            variant: 'warning',
+          });
+        } else {
+          enqueueSnackbar(error.message, {
+            variant: 'warning',
+          });
+        }
       }
 
       if (data) {

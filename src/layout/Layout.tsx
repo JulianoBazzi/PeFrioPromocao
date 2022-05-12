@@ -3,9 +3,12 @@ import Head from 'next/head';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import NextLink from 'next/link';
+import Logout from '@mui/icons-material/Logout';
+import { supabase } from '~/services/supabase';
+import { useSnackbar } from 'notistack';
 
 import Footer from './Footer';
-import { Link, Typography } from '@mui/material';
+import { IconButton, Link, Tooltip, Typography } from '@mui/material';
 
 interface Props {
   hideHeader?: boolean;
@@ -14,6 +17,22 @@ interface Props {
 }
 
 const Layout: FC<Props> = ({ hideHeader, hideFooter, children }) => {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut()
+
+    if (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'warning',
+      });
+
+      return;
+    }
+
+    window.location.href = '/login';
+  };
+
   return (
     <>
       <Head>
@@ -53,6 +72,15 @@ const Layout: FC<Props> = ({ hideHeader, hideFooter, children }) => {
                       </Typography>
                     </Link>
                   </NextLink>
+                  <Tooltip sx={{ ml: 4 }} title="Sair" placement="top-end">
+                    <IconButton
+                      size="small"
+                      aria-label="exit"
+                      onClick={async () => await logout()}
+                    >
+                      <Logout sx={{ color: '#ffff' }} />
+                    </IconButton>
+                  </Tooltip>
                 </Toolbar>
               </Box>
             )}

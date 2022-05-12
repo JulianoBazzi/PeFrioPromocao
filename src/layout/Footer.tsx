@@ -1,7 +1,9 @@
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Grid from '@mui/material/Grid'
-import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import NextLink from 'next/link';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { Link } from '@mui/material';
 
 function Footer() {
   const isDisplayed = false
@@ -19,9 +21,13 @@ function Footer() {
         <Container>
           <Grid container>
             <Grid item xs={12}>
-              <Typography align='center' variant='body2'>
-                &copy; Copyright 2022, Desenvolvido por Bazzi Solutions
-              </Typography>
+              <NextLink href="/" passHref>
+                <Link color="#fff" title="Retornar para página principal" underline="none">
+                  <Typography align='center' variant='body2'>
+                    Apoio: Mercurius Plataforma de Delivery (@mercurius.delivery)
+                  </Typography>
+                </Link>
+              </NextLink>
             </Grid>
           </Grid>
         </Container>
