@@ -8,7 +8,8 @@ import INumbers from '~/models/INumbers';
 import Layout from '~/layout/Layout';
 
 const Numbers: NextPage = () => {
-  const pageCount = 339;
+  const pageCount = 239;
+  const totalPage = 24;
   const [isLoading, setIsLoading] = useState(true);
   const [numbersGeral, setNumbersGeral] = useState<INumbers[]>([]);
   const [numbersSorted, setNumbersSorted] = useState<INumbers[]>([]);
@@ -120,7 +121,7 @@ const Numbers: NextPage = () => {
       }).subscribe();
 
     const interval = setInterval(() => {
-      setPage((page) => page > 16 ? 0 : page + 1);
+      setPage((page) => page > totalPage - 1 ? 0 : page + 1);
     }, minute_ms);
 
     return () => {
@@ -154,20 +155,19 @@ const Numbers: NextPage = () => {
         </div>
       ) : (
         <>
-          <ImageList component="main" sx={{ mt: 0.8, p: 0.2 }} cols={20}>
+          <ImageList component="main" sx={{ mt: 0.4, p: 0.1 }} cols={16}>
             {numbers.map((item) => (
               <ImageListItem key={item.number}>
-                <Box component="span" sx={{ border: '0.3px solid black', backgroundColor: item.sorted ? '#AAF27F' : '#FFFFFF', textAlign: 'center' }}>
-                  <Typography variant="caption" color="text.primary">
+                <Box component="span" sx={{ border: '2px solid black', backgroundColor: item.sorted ? '#d0f8b9' : '#FFFFFF', textAlign: 'center' }}>
+                  <Typography variant="subtitle2" color="text.primary" fontWeight="bold">
                     {item.number}
                   </Typography>
-                  {/* <Button fullWidth sx={{ backgroundColor: item.sorted ? '#AAF27F' : '#FFFFFF' }}>{item.number}</Button> */}
                 </Box>
               </ImageListItem>
             ))}
           </ImageList>
 
-          {page === 17 && (
+          {/* {page === totalPage && (
             <Stack direction="row" justifyContent="space-between" sx={{ p: 5 }}>
               <Box
                 sx={{
@@ -188,7 +188,7 @@ const Numbers: NextPage = () => {
                 <img src="app-logo.webp" alt="Mercurius" width="200" />
               </Box>
             </Stack>
-          )}
+          )} */}
         </>
       )}
     </Layout>
